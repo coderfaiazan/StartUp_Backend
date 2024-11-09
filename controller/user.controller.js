@@ -8,11 +8,12 @@ import crypto from "crypto";
 import cloudinary from "cloudinary";
 
 const cookieOptions = {
-  maxAge: 7 * 24 * 60 * 60 * 100, //7 days ke liye cookie set hogi
+  maxAge: 7 * 24 * 60 * 60 * 100,//7 days ke liye cookie set hogi
   httpOnly: true,
   secure: true,
-  samesite:"none",
-};
+  sameSite: 'None',
+  path: '/',
+}
 
 async function register(req, res, next) {
   try {
@@ -148,7 +149,7 @@ async function login(req, res, next) {
     const match = user.comparepassword(password);
     //  asal me yahan wait use karna chahiye but mera compare password shi wrk kar nhi rha hai isliye await use nhi kar rhe
     console.log("match>>>", match);
-    if (!match) {
+    if (!user.comparepassword(password)) {
       return next(new AppError("please enter right password", 404));
     }
     const token = await user.generateJWTToken();
@@ -166,6 +167,8 @@ async function login(req, res, next) {
 
 async function logout(req, res, next) {
   res.cookie("token", null, {
+    sameSite: 'None',
+    path: '/',
     secure: true,
     httpOnly: true,
     maxAge: 0,
